@@ -58,7 +58,7 @@ $(NODE_MODULES): package.json
 BOWER_MODULES=.bower-updated
 $(BOWER_MODULES): bower.json $(NODE_MODULES)
 	if ! test -f "${BOWER_MODULES}"; then rm -rf static/ext; fi
-	$(NODE) ./node_modules/bower/bin/bower install
+	$(NODE) ./node_modules/bower/bin/bower install --allow-root
 	@touch $@
 	# Workaround for lack of versioned monaco-editor in bower
 	rm -rf static/ext/monaco-editor
@@ -67,7 +67,7 @@ $(BOWER_MODULES): bower.json $(NODE_MODULES)
 lint: $(NODE_MODULES)
 	$(NODE) ./node_modules/.bin/jshint app.js $(shell find lib static -name '*.js' -not -path 'static/ext/*' -not -path static/analytics.js)
 
-LANG:=C++
+LANG:=sxhc
 
 node_modules: $(NODE_MODULES)
 bower_modules: $(BOWER_MODULES)
