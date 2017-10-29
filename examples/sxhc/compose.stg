@@ -1,0 +1,29 @@
+# RUN: %loadSimplexhc %s  --jit | FileCheck %s
+# CHECK: 3
+
+data Int2Ty = Int2Cons (PrimInt PrimInt);
+data IntTy = IntCons (PrimInt);
+
+binding int_2_cons = \() -> Int2Ty { Int2Cons (2 3) };
+
+binding swap = \(x_swap: () -> Int2Ty) -> Int2Ty {
+    case x_swap () of
+        Int2Cons (x y) -> Int2Cons (y x); };
+
+binding extractIntWrapped = \(x_int_wrapped: () -> Int2Ty) -> IntTy { 
+    case x_int_wrapped () of
+        Int2Cons (x y) -> IntCons (x); 
+};
+
+binding compose = \(f: (Boxed) -> Boxed g:(Boxed) -> Boxed x:(Boxed) -> Boxed) -> Boxed { 
+    let 
+        binding gx = \(g:Boxed x:Boxed) () -> Boxed { g (x) };
+    in f (gx)
+};
+
+binding pullapart = \() -> IntTy { compose (extractIntWrapped swap int_2_cons) };
+
+binding main = \() -> Boxed { 
+    case pullapart () of
+        IntCons(x) -> printInt (x);
+};
